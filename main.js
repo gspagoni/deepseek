@@ -6,6 +6,10 @@ const log = require("electron-log");
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
 
+// Disabilita le notifiche predefinite
+autoUpdater.autoDownload = false; // Disabilita il download automatico
+autoUpdater.autoInstallOnAppQuit = false; // Disabilita l'installazione automatica all'uscita
+
 let mainWindow;
 
 function createWindow() {
