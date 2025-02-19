@@ -24,7 +24,10 @@ function createWindow() {
   autoUpdater.checkForUpdatesAndNotify();
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  log.info("App version:", app.getVersion());
+});
 
 // Auto-updater events
 autoUpdater.on("update-available", () => {
