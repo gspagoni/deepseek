@@ -1,0 +1,31 @@
+{
+  "name": "deepseek",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+ "dependencies": {
+    "electron": "^34.2.0",
+    "electron-log": "^5.3.0",
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "gspagoni",
+        "repo": "deepseek"
+      }
+    ],
+    "appId": "com.example.yourapp",
+    "productName": "Deepseek",
+    "directories": {
+      "output": "dist"
+    }
+  }
+}
