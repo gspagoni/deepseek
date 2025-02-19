@@ -39,6 +39,7 @@ autoUpdater.on("update-downloaded", () => {
 
 autoUpdater.on("error", (error) => {
   log.error("Error in auto-updater:", error);
+  mainWindow.webContents.send("error");
 });
 
 // Quit and install the update

@@ -15,4 +15,10 @@ ipcRenderer.on("update_downloaded", () => {
   if (shouldRestart) {
     ipcRenderer.send("restart_app");
   }
+
+  ipcRenderer.on("error", () => {
+    console.error("Error in auto-updater");
+    // Notify the user (e.g., show a notification or modal)
+    alert("An error occurred while updating the app.");
+  });
 });
