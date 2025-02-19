@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dialog</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .dialog-box {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 300px;
+    }
+    .dialog-box h2 {
+      margin-top: 0;
+      font-size: 18px;
+      color: #333;
+    }
+    .dialog-box p {
+      font-size: 14px;
+      color: #666;
+    }
+    .btn-yes {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+    .btn-no {
+      background-color: transparent;
+      color: #007bff;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="dialog-box">
+    <h2 id="dialog-title">Titolo</h2>
+    <p id="dialog-message">Messaggio</p>
+    <button id="btn-yes" class="btn-yes">Sì</button>
+    <button id="btn-no" class="btn-no">No</button>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    // Ricevi le opzioni della finestra di dialogo
+    ipcRenderer.on('dialog-options', (event, options) => {
+      document.getElementById('dialog-title').textContent = options.title;
+      document.getElementById('dialog-message').textContent = options.message;
+
+      // Gestisci il clic sui pulsanti
+      document.getElementById('btn-yes').addEventListener('click', () => {
+        ipcRenderer.send('dialog-response', 0); // Risposta "Sì"
+      });
+
+      document.getElementById('btn-no').addEventListener('click', () => {
+        ipcRenderer.send('dialog-response', 1); // Risposta "No"
+      });
+    });
+  </script>
+</body>
+</html>
