@@ -12,7 +12,8 @@ autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
 
 let mainWindow;
-let dialogWindow = null; // Dichiara dialogWindow a livello superiore
+let dialogWindow = null; // Finestra di dialogo principale
+let restartDialogWindow = null; // Finestra di dialogo per il riavvio
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -66,6 +67,44 @@ function createDialog(options) {
   });
 
   return dialogWindow;
+}
+
+function createRestartDialog(options) {
+  if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
+    restartDialogWindow.close();
+  }
+
+  restartDialogWindow = new BrowserWindow({
+    width: 400,
+    height: 300,
+    resizable: false,
+    frame: false,
+    show: false,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
+
+  restartDialogWindow.loadFile(options.file);
+
+  restartDialogWindow.webContents.on("did-finish-load", () => {
+    if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
+      restartDialogWindow.webContents.send("dialog-options", options);
+    }
+  });
+
+  restartDialogWindow.once("ready-to-show", () => {
+    if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
+      restartDialogWindow.show();
+    }
+  });
+
+  restartDialogWindow.on("closed", () => {
+    restartDialogWindow = null;
+  });
+
+  return restartDialogWindow;
 }
 
 app.whenReady().then(() => {
@@ -129,7 +168,7 @@ autoUpdater.on("update-downloaded", (info) => {
     buttons: ["Riavvia", "Più tardi"],
   };
 
-  dialogWindow = createDialog(dialogOptions);
+  restartDialogWindow = createRestartDialog(dialogOptions);
 
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
@@ -139,8 +178,8 @@ autoUpdater.on("update-downloaded", (info) => {
       log.info("Riavvio posticipato dall'utente");
     }
 
-    if (dialogWindow && !dialogWindow.isDestroyed()) {
-      dialogWindow.close();
+    if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
+      restartDialogWindow.close();
     }
   });
 });
