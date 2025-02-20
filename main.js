@@ -88,7 +88,15 @@ autoUpdater.on("update-available", (info) => {
 
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
+      // L'utente ha scelto di scaricare l'aggiornamento
       autoUpdater.downloadUpdate();
+
+      // Invia i progressi del download alla finestra di dialogo
+      autoUpdater.on("download-progress", (progressObj) => {
+        if (dialogWindow && !dialogWindow.isDestroyed()) {
+          dialogWindow.webContents.send("download-progress", progressObj);
+        }
+      });
     } else {
       log.info("Download annullato dall'utente");
     }
