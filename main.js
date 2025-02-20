@@ -12,7 +12,7 @@ autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
 
 let mainWindow;
-let dialogWindow = null;
+let dialogWindow = null; // Dichiara dialogWindow a livello superiore
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -84,7 +84,7 @@ autoUpdater.on("update-available", (info) => {
     buttons: ["Sì", "No"],
   };
 
-  const dialogWindow = createDialog(dialogOptions);
+  dialogWindow = createDialog(dialogOptions);
 
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
@@ -99,7 +99,9 @@ autoUpdater.on("update-available", (info) => {
       });
 
       // Mostra la progress bar nella finestra di dialogo
-      dialogWindow.webContents.send("show-progress-bar");
+      if (dialogWindow && !dialogWindow.isDestroyed()) {
+        dialogWindow.webContents.send("show-progress-bar");
+      }
     } else {
       log.info("Download annullato dall'utente");
       if (dialogWindow && !dialogWindow.isDestroyed()) {
@@ -123,7 +125,7 @@ autoUpdater.on("update-downloaded", (info) => {
     buttons: ["Riavvia", "Più tardi"],
   };
 
-  const dialogWindow = createDialog(dialogOptions);
+  dialogWindow = createDialog(dialogOptions);
 
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
