@@ -138,6 +138,7 @@ autoUpdater.on("update-available", (info) => {
       autoUpdater.on("download-progress", (progressObj) => {
         log.info("Progresso del download:", progressObj); // Debug: log del progresso
         if (dialogWindow && !dialogWindow.isDestroyed()) {
+          log.info("Invio progresso alla finestra di dialogo:", progressObj); // Debug: log dell'invio
           dialogWindow.webContents.send("download-progress", progressObj);
         }
       });
