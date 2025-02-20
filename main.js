@@ -50,11 +50,15 @@ function createDialog(options) {
   dialogWindow.loadFile(options.file);
 
   dialogWindow.webContents.on("did-finish-load", () => {
-    dialogWindow.webContents.send("dialog-options", options);
+    if (dialogWindow && !dialogWindow.isDestroyed()) {
+      dialogWindow.webContents.send("dialog-options", options);
+    }
   });
 
   dialogWindow.once("ready-to-show", () => {
-    dialogWindow.show();
+    if (dialogWindow && !dialogWindow.isDestroyed()) {
+      dialogWindow.show();
+    }
   });
 
   dialogWindow.on("closed", () => {
