@@ -103,6 +103,7 @@
 
     // Aggiorna la progress bar in base ai progressi del download
     ipcRenderer.on('download-progress', (event, progress) => {
+      console.log("Progresso del download ricevuto:", progress); // Debug: log del progresso
       const progressBarInner = document.getElementById('progress-bar-inner');
       const percent = progress.percent || 0;
       progressBarInner.style.width = `${percent}%`;

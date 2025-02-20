@@ -136,6 +136,7 @@ autoUpdater.on("update-available", (info) => {
 
       // Invia i progressi del download alla finestra di dialogo
       autoUpdater.on("download-progress", (progressObj) => {
+        log.info("Progresso del download:", progressObj); // Debug: log del progresso
         if (dialogWindow && !dialogWindow.isDestroyed()) {
           dialogWindow.webContents.send("download-progress", progressObj);
         }
