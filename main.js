@@ -12,7 +12,7 @@ autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
 
 let mainWindow;
-let dialogWindow = null; // Inizializza la finestra di dialogo come null
+let dialogWindow = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -32,14 +32,14 @@ function createWindow() {
 
 function createDialog(options) {
   if (dialogWindow && !dialogWindow.isDestroyed()) {
-    dialogWindow.close(); // Chiudi la finestra esistente se è ancora aperta
+    dialogWindow.close();
   }
 
   dialogWindow = new BrowserWindow({
     width: 400,
     height: 300,
     resizable: false,
-    frame: false, // Rimuove la barra del titolo
+    frame: false,
     show: false,
     webPreferences: {
       nodeIntegration: true,
@@ -49,7 +49,6 @@ function createDialog(options) {
 
   dialogWindow.loadFile(options.file);
 
-  // Passa i dati alla finestra di dialogo
   dialogWindow.webContents.on("did-finish-load", () => {
     dialogWindow.webContents.send("dialog-options", options);
   });
@@ -58,9 +57,8 @@ function createDialog(options) {
     dialogWindow.show();
   });
 
-  // Gestisci la chiusura della finestra
   dialogWindow.on("closed", () => {
-    dialogWindow = null; // Imposta la finestra su null per evitare riferimenti pendenti
+    dialogWindow = null;
   });
 
   return dialogWindow;
@@ -69,8 +67,12 @@ function createDialog(options) {
 app.whenReady().then(createWindow);
 
 // Eventi dell'auto-updater
-autoUpdater.on("update-available", async (info) => {
-  log.info("Update available:", info);
+autoUpdater.on("checking-for-update", () => {
+  log.info("Controllo degli aggiornamenti in corso...");
+});
+
+autoUpdater.on("update-available", (info) => {
+  log.info("Aggiornamento disponibile:", info);
 
   const dialogOptions = {
     file: "dialog.html",
@@ -81,7 +83,6 @@ autoUpdater.on("update-available", async (info) => {
 
   const dialogWindow = createDialog(dialogOptions);
 
-  // Usa `once` per rimuovere automaticamente il listener dopo l'uso
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
       autoUpdater.downloadUpdate();
@@ -89,15 +90,14 @@ autoUpdater.on("update-available", async (info) => {
       log.info("Download annullato dall'utente");
     }
 
-    // Chiudi la finestra di dialogo se non è già distrutta
     if (dialogWindow && !dialogWindow.isDestroyed()) {
       dialogWindow.close();
     }
   });
 });
 
-autoUpdater.on("update-downloaded", async (info) => {
-  log.info("Update downloaded:", info);
+autoUpdater.on("update-downloaded", (info) => {
+  log.info("Aggiornamento scaricato:", info);
 
   const dialogOptions = {
     file: "dialog.html",
@@ -108,7 +108,6 @@ autoUpdater.on("update-downloaded", async (info) => {
 
   const dialogWindow = createDialog(dialogOptions);
 
-  // Usa `once` per rimuovere automaticamente il listener dopo l'uso
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
       autoUpdater.quitAndInstall();
@@ -116,24 +115,18 @@ autoUpdater.on("update-downloaded", async (info) => {
       log.info("Riavvio posticipato dall'utente");
     }
 
-    // Chiudi la finestra di dialogo se non è già distrutta
     if (dialogWindow && !dialogWindow.isDestroyed()) {
       dialogWindow.close();
     }
   });
 });
 
+autoUpdater.on("update-not-available", (info) => {
+  log.info("Nessun aggiornamento disponibile:", info);
+});
+
 autoUpdater.on("error", (error) => {
   log.error("Errore durante il controllo degli aggiornamenti:", error);
-
-  // Mostra una finestra di dialogo per l'errore
-  dialog.showMessageBox(mainWindow, {
-    type: "error",
-    title: "Errore",
-    message:
-      "Si è verificato un errore durante il controllo degli aggiornamenti.",
-    buttons: ["OK"],
-  });
 });
 
 app.on("window-all-closed", () => {
