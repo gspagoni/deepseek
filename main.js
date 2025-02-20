@@ -133,6 +133,7 @@ autoUpdater.on("update-downloaded", (info) => {
 
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
+      // Riavvia l'app per applicare l'aggiornamento
       autoUpdater.quitAndInstall();
     } else {
       log.info("Riavvio posticipato dall'utente");
