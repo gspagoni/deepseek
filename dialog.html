@@ -56,6 +56,7 @@
       border-radius: 5px;
       margin: 10px 0;
       overflow: hidden;
+      display: none; /* Nascondi inizialmente la progress bar */
     }
     .progress-bar-inner {
       height: 100%;
@@ -69,7 +70,7 @@
   <div class="dialog-box">
     <h2 id="dialog-title">Titolo</h2>
     <p id="dialog-message">Messaggio</p>
-    <div class="progress-bar">
+    <div class="progress-bar" id="progress-bar">
       <div id="progress-bar-inner" class="progress-bar-inner"></div>
     </div>
     <button id="btn-yes" class="btn-yes">Sì</button>
@@ -92,6 +93,12 @@
       document.getElementById('btn-no').addEventListener('click', () => {
         ipcRenderer.send('dialog-response', 1); // Risposta "No"
       });
+    });
+
+    // Mostra la progress bar quando richiesto
+    ipcRenderer.on('show-progress-bar', () => {
+      const progressBar = document.getElementById('progress-bar');
+      progressBar.style.display = 'block'; // Mostra la progress bar
     });
 
     // Aggiorna la progress bar in base ai progressi del download
