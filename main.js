@@ -64,7 +64,10 @@ function createDialog(options) {
   return dialogWindow;
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  log.info("Applicazione versione", app.getVersion());
+});
 
 // Eventi dell'auto-updater
 autoUpdater.on("checking-for-update", () => {
