@@ -78,31 +78,29 @@
   </div>
 
   <script>
-    const { ipcRenderer } = require('electron');
-
-    // Ricevi le opzioni della finestra di dialogo
-    ipcRenderer.on('dialog-options', (event, options) => {
+    // Utilizza l'API esposta dal preload.js
+    window.electronAPI.onDialogOptions((options) => {
       document.getElementById('dialog-title').textContent = options.title;
       document.getElementById('dialog-message').textContent = options.message;
 
       // Gestisci il clic sui pulsanti
       document.getElementById('btn-yes').addEventListener('click', () => {
-        ipcRenderer.send('dialog-response', 0); // Risposta "Sì"
+        window.electronAPI.sendDialogResponse(0); // Risposta "Sì"
       });
 
       document.getElementById('btn-no').addEventListener('click', () => {
-        ipcRenderer.send('dialog-response', 1); // Risposta "No"
+        window.electronAPI.sendDialogResponse(1); // Risposta "No"
       });
     });
 
     // Mostra la progress bar quando richiesto
-    ipcRenderer.on('show-progress-bar', () => {
+    window.electronAPI.onShowProgressBar(() => {
       const progressBar = document.getElementById('progress-bar');
       progressBar.style.display = 'block'; // Mostra la progress bar
     });
 
     // Aggiorna la progress bar in base ai progressi del download
-    ipcRenderer.on('download-progress', (event, progress) => {
+    window.electronAPI.onDownloadProgress((progress) => {
       console.log("Progresso del download ricevuto:", progress); // Debug: log del progresso
       const progressBarInner = document.getElementById('progress-bar-inner');
       const percent = progress.percent || 0;

@@ -20,8 +20,9 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      preload: path.join(__dirname, "preload.js"), // Usa il file preload.js
+      nodeIntegration: false, // Disabilita nodeIntegration per sicurezza
+      contextIsolation: true, // Abilita contextIsolation per sicurezza
     },
   });
 
@@ -43,12 +44,13 @@ function createDialog(options) {
     frame: false,
     show: false,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      preload: path.join(__dirname, "preload.js"), // Usa il file preload.js
+      nodeIntegration: false, // Disabilita nodeIntegration per sicurezza
+      contextIsolation: true, // Abilita contextIsolation per sicurezza
     },
   });
 
-  dialogWindow.loadFile(options.file);
+  dialogWindow.loadFile("dialog.html");
 
   dialogWindow.webContents.on("did-finish-load", () => {
     if (dialogWindow && !dialogWindow.isDestroyed()) {
@@ -81,12 +83,13 @@ function createRestartDialog(options) {
     frame: false,
     show: false,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      preload: path.join(__dirname, "preload.js"), // Usa il file preload.js
+      nodeIntegration: false, // Disabilita nodeIntegration per sicurezza
+      contextIsolation: true, // Abilita contextIsolation per sicurezza
     },
   });
 
-  restartDialogWindow.loadFile(options.file);
+  restartDialogWindow.loadFile("dialog.html");
 
   restartDialogWindow.webContents.on("did-finish-load", () => {
     if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
@@ -138,7 +141,6 @@ autoUpdater.on("update-available", (info) => {
       autoUpdater.on("download-progress", (progressObj) => {
         log.info("Progresso del download:", progressObj); // Debug: log del progresso
         if (dialogWindow && !dialogWindow.isDestroyed()) {
-          log.info("Invio progresso alla finestra di dialogo:", progressObj); // Debug: log dell'invio
           dialogWindow.webContents.send("download-progress", progressObj);
         }
       });
