@@ -64,6 +64,11 @@
       width: 0%;
       transition: width 0.3s ease;
     }
+    .progress-info {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
@@ -72,6 +77,11 @@
     <p id="dialog-message">Messaggio</p>
     <div class="progress-bar" id="progress-bar">
       <div id="progress-bar-inner" class="progress-bar-inner"></div>
+    </div>
+    <div class="progress-info">
+      <span id="progress-percent">0%</span> |
+      <span id="progress-transferred">0 MB</span> |
+      <span id="progress-speed">0 KB/s</span>
     </div>
     <button id="btn-yes" class="btn-yes">Sì</button>
     <button id="btn-no" class="btn-no">No</button>
@@ -99,12 +109,28 @@
       progressBar.style.display = 'block'; // Mostra la progress bar
     });
 
-    // Aggiorna la progress bar in base ai progressi del download
+    // Aggiorna la progress bar e le informazioni di progresso
     window.electronAPI.onDownloadProgress((progress) => {
       console.log("Progresso del download ricevuto:", progress); // Debug: log del progresso
+
+      // Aggiorna la progress bar
       const progressBarInner = document.getElementById('progress-bar-inner');
       const percent = progress.percent || 0;
       progressBarInner.style.width = `${percent}%`;
+
+      // Aggiorna la percentuale di completamento
+      const progressPercent = document.getElementById('progress-percent');
+      progressPercent.textContent = `${percent.toFixed(1)}%`;
+
+      // Aggiorna i byte trasferiti (convertiti in MB)
+      const progressTransferred = document.getElementById('progress-transferred');
+      const transferredMB = (progress.transferred / 1024 / 1024).toFixed(2);
+      progressTransferred.textContent = `${transferredMB} MB`;
+
+      // Aggiorna la velocità di download (convertita in KB/s)
+      const progressSpeed = document.getElementById('progress-speed');
+      const speedKBps = (progress.bytesPerSecond / 1024).toFixed(2);
+      progressSpeed.textContent = `${speedKBps} KB/s`;
     });
   </script>
 </body>
