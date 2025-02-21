@@ -1,0 +1,73 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+  
+  .dialog-box {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 300px;
+  }
+  
+  .dialog-box h2 {
+    margin-top: 0;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .dialog-box p {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .btn-yes {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 10px 0;
+  }
+  
+  .btn-no {
+    background-color: transparent;
+    color: #007bff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    margin: 10px 0;
+    overflow: hidden;
+    display: none; /* Initially hide the progress bar */
+  }
+  
+  .progress-bar-inner {
+    height: 100%;
+    background-color: #007bff;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  
+  .progress-info {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    display: none; /* Initially hide the progress info */
+  }
