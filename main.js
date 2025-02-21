@@ -152,10 +152,10 @@ autoUpdater.on("update-available", (info) => {
 autoUpdater.on("update-downloaded", (info) => {
   log.info("Aggiornamento scaricato:", info);
 
-  // Chiudi la finestra di download immediatamente
+  // Chiudi la finestra di download
   if (dialogWindow && !dialogWindow.isDestroyed()) {
     dialogWindow.close();
-    dialogWindow = null; // Assicurati che la variabile venga resettata
+    dialogWindow = null;
   }
 
   const dialogOptions = {
@@ -169,20 +169,27 @@ autoUpdater.on("update-downloaded", (info) => {
 
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
-      // Chiudi tutte le finestre prima di avviare l'aggiornamento
+      log.info("Richiesto riavvio per installare l'aggiornamento");
+
+      // Chiudi tutte le finestre
       if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
         restartDialogWindow.close();
-        restartDialogWindow = null; // Resetta la variabile
+        restartDialogWindow = null;
       }
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.close();
-        mainWindow = null; // Resetta la variabile
+        mainWindow = null;
       }
 
-      // Ritarda leggermente il quitAndInstall per garantire che tutte le finestre siano chiuse
+      // Ritarda il quitAndInstall per garantire la chiusura delle finestre
       setTimeout(() => {
-        autoUpdater.quitAndInstall();
-      }, 100);
+        try {
+          log.info("Avvio di quitAndInstall...");
+          autoUpdater.quitAndInstall(true, true); // Forza l'installazione e il riavvio
+        } catch (error) {
+          log.error("Errore durante quitAndInstall:", error);
+        }
+      }, 500); // Aumentato a 500ms per sicurezza
     } else {
       log.info("Riavvio posticipato dall'utente");
       if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
