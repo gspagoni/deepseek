@@ -56,7 +56,7 @@
       border-radius: 5px;
       margin: 10px 0;
       overflow: hidden;
-      display: none; /* Nascondi inizialmente la progress bar */
+      display: none; /* Initially hide the progress bar */
     }
     .progress-bar-inner {
       height: 100%;
@@ -68,14 +68,14 @@
       font-size: 12px;
       color: #666;
       margin-top: 5px;
-      display: none; /* Nascondi inizialmente le informazioni di progresso */
+      display: none; /* Initially hide the progress info */
     }
   </style>
 </head>
 <body>
   <div class="dialog-box">
-    <h2 id="dialog-title">Titolo</h2>
-    <p id="dialog-message">Messaggio</p>
+    <h2 id="dialog-title">Title</h2>
+    <p id="dialog-message">Message</p>
     <div class="progress-bar" id="progress-bar">
       <div id="progress-bar-inner" class="progress-bar-inner"></div>
     </div>
@@ -84,21 +84,21 @@
       <span id="progress-transferred">0 MB</span> |
       <span id="progress-speed">0 KB/s</span>
     </div>
-    <button id="btn-yes" class="btn-yes">Sì</button>
+    <button id="btn-yes" class="btn-yes">Yes</button>
     <button id="btn-no" class="btn-no">No</button>
   </div>
 
   <script>
-    // Utilizza l'API esposta dal preload.js
+    // Use the API exposed by preload.js
     window.electronAPI.onDialogOptions((options) => {
       document.getElementById('dialog-title').textContent = options.title;
       document.getElementById('dialog-message').textContent = options.message;
 
-      // Gestisci il clic sui pulsanti
+      // Handle button clicks
       document.getElementById('btn-yes').addEventListener('click', () => {
-        window.electronAPI.sendDialogResponse(0); // Risposta "Sì"
+        window.electronAPI.sendDialogResponse(0); // "Yes" response
 
-        // Mostra la progress bar e le informazioni di progresso
+        // Show the progress bar and progress info
         const progressBar = document.getElementById('progress-bar');
         const progressInfo = document.getElementById('progress-info');
         progressBar.style.display = 'block';
@@ -106,35 +106,35 @@
       });
 
       document.getElementById('btn-no').addEventListener('click', () => {
-        window.electronAPI.sendDialogResponse(1); // Risposta "No"
+        window.electronAPI.sendDialogResponse(1); // "No" response
       });
     });
 
-    // Aggiorna la progress bar e le informazioni di progresso
+    // Update the progress bar and progress info
     window.electronAPI.onDownloadProgress((progress) => {
-      console.log("Progresso del download ricevuto:", progress); // Debug: log del progresso
+      console.log("Download progress received:", progress); // Debug: log progress
 
-      // Aggiorna la progress bar
+      // Update the progress bar
       const progressBarInner = document.getElementById('progress-bar-inner');
       const percent = progress.percent || 0;
       progressBarInner.style.width = `${percent}%`;
 
-      // Aggiorna la percentuale di completamento
+      // Update the completion percentage
       const progressPercent = document.getElementById('progress-percent');
       progressPercent.textContent = `${percent.toFixed(1)}%`;
 
-      // Aggiorna i byte trasferiti (convertiti in MB)
+      // Update the transferred bytes (converted to MB)
       const progressTransferred = document.getElementById('progress-transferred');
       const transferredMB = (progress.transferred / 1024 / 1024).toFixed(2);
       progressTransferred.textContent = `${transferredMB} MB`;
 
-      // Aggiorna la velocità di download (convertita in KB/s)
+      // Update the download speed (converted to KB/s)
       const progressSpeed = document.getElementById('progress-speed');
       const speedKBps = (progress.bytesPerSecond / 1024).toFixed(2);
       progressSpeed.textContent = `${speedKBps} KB/s`;
     });
 
-    // Nascondi la progress bar e le informazioni di progresso quando il download è completato
+    // Hide the progress bar and progress info when the download is complete
     window.electronAPI.onDownloadComplete(() => {
       const progressBar = document.getElementById('progress-bar');
       const progressInfo = document.getElementById('progress-info');

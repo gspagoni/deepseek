@@ -1,22 +1,22 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
-// Esponi un'API sicura per il renderer process
+// Expose a secure API to the renderer process
 contextBridge.exposeInMainWorld("electronAPI", {
-  // Metodo per inviare una risposta alla finestra di dialogo
+  // Method to send a response to the dialog
   sendDialogResponse: (response) =>
     ipcRenderer.send("dialog-response", response),
 
-  // Metodo per ricevere le opzioni della finestra di dialogo
+  // Method to receive dialog options
   onDialogOptions: (callback) =>
     ipcRenderer.on("dialog-options", (event, options) => callback(options)),
 
-  // Metodo per ricevere i progressi del download
+  // Method to receive download progress
   onDownloadProgress: (callback) =>
     ipcRenderer.on("download-progress", (event, progress) =>
       callback(progress)
     ),
 
-  // Metodo per notificare il completamento del download
+  // Method to notify download completion
   onDownloadComplete: (callback) =>
     ipcRenderer.on("download-complete", () => callback()),
 });

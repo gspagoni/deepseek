@@ -3,32 +3,32 @@ const { autoUpdater } = require("electron-updater");
 const log = require("electron-log");
 const path = require("path");
 
-// Configura il logger
+// Configure the logger
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = "info";
 
-// Disabilita le notifiche predefinite
+// Disable default notifications
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
 
 let mainWindow;
-let dialogWindow = null; // Finestra di dialogo principale
-let restartDialogWindow = null; // Finestra di dialogo per il riavvio
+let dialogWindow = null; // Main dialog window
+let restartDialogWindow = null; // Restart dialog window
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"), // Usa il file preload.js
-      nodeIntegration: false, // Disabilita nodeIntegration per sicurezza
-      contextIsolation: true, // Abilita contextIsolation per sicurezza
+      preload: path.join(__dirname, "preload.js"), // Use the preload.js file
+      nodeIntegration: false, // Disable nodeIntegration for security
+      contextIsolation: true, // Enable contextIsolation for security
     },
   });
 
   mainWindow.loadFile("index.html");
 
-  // Controlla gli aggiornamenti
+  // Check for updates
   autoUpdater.checkForUpdates();
 }
 
@@ -44,9 +44,9 @@ function createDialog(options) {
     frame: false,
     show: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"), // Usa il file preload.js
-      nodeIntegration: false, // Disabilita nodeIntegration per sicurezza
-      contextIsolation: true, // Abilita contextIsolation per sicurezza
+      preload: path.join(__dirname, "preload.js"), // Use the preload.js file
+      nodeIntegration: false, // Disable nodeIntegration for security
+      contextIsolation: true, // Enable contextIsolation for security
     },
   });
 
@@ -83,9 +83,9 @@ function createRestartDialog(options) {
     frame: false,
     show: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"), // Usa il file preload.js
-      nodeIntegration: false, // Disabilita nodeIntegration per sicurezza
-      contextIsolation: true, // Abilita contextIsolation per sicurezza
+      preload: path.join(__dirname, "preload.js"), // Use the preload.js file
+      nodeIntegration: false, // Disable nodeIntegration for security
+      contextIsolation: true, // Enable contextIsolation for security
     },
   });
 
@@ -112,40 +112,40 @@ function createRestartDialog(options) {
 
 app.whenReady().then(() => {
   createWindow();
-  log.info("Applicazione versione", app.getVersion());
+  log.info("Application version", app.getVersion());
 });
 
-// Eventi dell'auto-updater
+// Auto-updater events
 autoUpdater.on("checking-for-update", () => {
-  log.info("Controllo degli aggiornamenti in corso...");
+  log.info("Checking for updates...");
 });
 
 autoUpdater.on("update-available", (info) => {
-  log.info("Aggiornamento disponibile:", info);
+  log.info("Update available:", info);
 
   const dialogOptions = {
     file: "dialog.html",
-    title: "Aggiornamento disponibile",
-    message: "È disponibile una nuova versione. Vuoi scaricarla ora?",
-    buttons: ["Sì", "No"],
+    title: "Update available",
+    message: "A new version is available. Do you want to download it now?",
+    buttons: ["Yes", "No"],
   };
 
   dialogWindow = createDialog(dialogOptions);
 
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
-      // L'utente ha scelto di scaricare l'aggiornamento
+      // User chose to download the update
       autoUpdater.downloadUpdate();
 
-      // Invia i progressi del download alla finestra di dialogo
+      // Send download progress to the dialog window
       autoUpdater.on("download-progress", (progressObj) => {
-        log.info("Progresso del download:", progressObj); // Debug: log del progresso
+        log.info("Download progress:", progressObj); // Debug: log progress
         if (dialogWindow && !dialogWindow.isDestroyed()) {
           dialogWindow.webContents.send("download-progress", progressObj);
         }
       });
     } else {
-      log.info("Download annullato dall'utente");
+      log.info("Download canceled by the user");
       if (dialogWindow && !dialogWindow.isDestroyed()) {
         dialogWindow.close();
       }
@@ -154,36 +154,37 @@ autoUpdater.on("update-available", (info) => {
 });
 
 autoUpdater.on("update-downloaded", (info) => {
-  log.info("Aggiornamento scaricato:", info);
+  log.info("Update downloaded:", info);
 
   if (dialogWindow && !dialogWindow.isDestroyed()) {
-    // Notifica il renderer process che il download è completato
+    // Notify the renderer process that the download is complete
     dialogWindow.webContents.send("download-complete");
     dialogWindow.close();
   }
 
   const dialogOptions = {
     file: "dialog.html",
-    title: "Aggiornamento scaricato",
-    message: "L'aggiornamento è stato scaricato. Vuoi riavviare l'app ora?",
-    buttons: ["Riavvia", "Più tardi"],
+    title: "Update downloaded",
+    message:
+      "The update has been downloaded. Do you want to restart the app now?",
+    buttons: ["Restart", "Later"],
   };
 
   restartDialogWindow = createRestartDialog(dialogOptions);
 
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
-      // Chiudi la finestra di riavvio prima di riavviare l'app
+      // Close the restart window before restarting the app
       if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
         restartDialogWindow.close();
       }
 
-      // Riavvia l'app per applicare l'aggiornamento
+      // Restart the app to apply the update
       autoUpdater.quitAndInstall();
     } else {
-      log.info("Riavvio posticipato dall'utente");
+      log.info("Restart postponed by the user");
 
-      // Chiudi la finestra di riavvio se l'utente sceglie di riavviare più tardi
+      // Close the restart window if the user chooses to restart later
       if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
         restartDialogWindow.close();
       }
@@ -192,11 +193,11 @@ autoUpdater.on("update-downloaded", (info) => {
 });
 
 autoUpdater.on("update-not-available", (info) => {
-  log.info("Nessun aggiornamento disponibile:", info);
+  log.info("No updates available:", info);
 });
 
 autoUpdater.on("error", (error) => {
-  log.error("Errore durante il controllo degli aggiornamenti:", error);
+  log.error("Error while checking for updates:", error);
 });
 
 app.on("window-all-closed", () => {
