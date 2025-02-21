@@ -20,15 +20,13 @@ function createWindow() {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"), // Usa il file preload.js
-      nodeIntegration: false, // Disabilita nodeIntegration per sicurezza
-      contextIsolation: true, // Abilita contextIsolation per sicurezza
+      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: false,
+      contextIsolation: true,
     },
   });
 
   mainWindow.loadFile("index.html");
-
-  // Controlla gli aggiornamenti
   autoUpdater.checkForUpdates();
 }
 
@@ -44,9 +42,9 @@ function createDialog(options) {
     frame: false,
     show: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"), // Usa il file preload.js
-      nodeIntegration: false, // Disabilita nodeIntegration per sicurezza
-      contextIsolation: true, // Abilita contextIsolation per sicurezza
+      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: false,
+      contextIsolation: true,
     },
   });
 
@@ -83,9 +81,9 @@ function createRestartDialog(options) {
     frame: false,
     show: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"), // Usa il file preload.js
-      nodeIntegration: false, // Disabilita nodeIntegration per sicurezza
-      contextIsolation: true, // Abilita contextIsolation per sicurezza
+      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: false,
+      contextIsolation: true,
     },
   });
 
@@ -134,12 +132,10 @@ autoUpdater.on("update-available", (info) => {
 
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
-      // L'utente ha scelto di scaricare l'aggiornamento
       autoUpdater.downloadUpdate();
 
-      // Invia i progressi del download alla finestra di dialogo
       autoUpdater.on("download-progress", (progressObj) => {
-        log.info("Progresso del download:", progressObj); // Debug: log del progresso
+        log.info("Progresso del download:", progressObj);
         if (dialogWindow && !dialogWindow.isDestroyed()) {
           dialogWindow.webContents.send("download-progress", progressObj);
         }
@@ -156,10 +152,10 @@ autoUpdater.on("update-available", (info) => {
 autoUpdater.on("update-downloaded", (info) => {
   log.info("Aggiornamento scaricato:", info);
 
+  // Chiudi la finestra di download immediatamente
   if (dialogWindow && !dialogWindow.isDestroyed()) {
-    // Notifica il renderer process che il download è completato
-    dialogWindow.webContents.send("download-complete");
     dialogWindow.close();
+    dialogWindow = null; // Assicurati che la variabile venga resettata
   }
 
   const dialogOptions = {
@@ -173,17 +169,22 @@ autoUpdater.on("update-downloaded", (info) => {
 
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
-      // Chiudi la finestra di riavvio prima di riavviare l'app
+      // Chiudi tutte le finestre prima di avviare l'aggiornamento
       if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
         restartDialogWindow.close();
+        restartDialogWindow = null; // Resetta la variabile
+      }
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.close();
+        mainWindow = null; // Resetta la variabile
       }
 
-      // Riavvia l'app per applicare l'aggiornamento
-      autoUpdater.quitAndInstall();
+      // Ritarda leggermente il quitAndInstall per garantire che tutte le finestre siano chiuse
+      setTimeout(() => {
+        autoUpdater.quitAndInstall();
+      }, 100);
     } else {
       log.info("Riavvio posticipato dall'utente");
-
-      // Chiudi la finestra di riavvio se l'utente sceglie di riavviare più tardi
       if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
         restartDialogWindow.close();
       }
