@@ -173,14 +173,20 @@ autoUpdater.on("update-downloaded", (info) => {
 
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
+      // Chiudi la finestra di riavvio prima di riavviare l'app
+      if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
+        restartDialogWindow.close();
+      }
+
       // Riavvia l'app per applicare l'aggiornamento
       autoUpdater.quitAndInstall();
     } else {
       log.info("Riavvio posticipato dall'utente");
-    }
 
-    if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
-      restartDialogWindow.close();
+      // Chiudi la finestra di riavvio se l'utente sceglie di riavviare più tardi
+      if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
+        restartDialogWindow.close();
+      }
     }
   });
 });
