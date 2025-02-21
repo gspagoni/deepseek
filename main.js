@@ -12,8 +12,8 @@ autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
 
 let mainWindow;
-let dialogWindow = null; // Finestra di dialogo principale
-let restartDialogWindow = null; // Finestra di dialogo per il riavvio
+let dialogWindow = null;
+let restartDialogWindow = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -27,6 +27,7 @@ function createWindow() {
   });
 
   mainWindow.loadFile("index.html");
+  log.info("Finestra principale creata, avvio controllo aggiornamenti...");
   autoUpdater.checkForUpdates();
 }
 
@@ -119,7 +120,7 @@ autoUpdater.on("checking-for-update", () => {
 });
 
 autoUpdater.on("update-available", (info) => {
-  log.info("Aggiornamento disponibile:", info);
+  log.info("Aggiornamento disponibile:", JSON.stringify(info));
 
   const dialogOptions = {
     file: "dialog.html",
@@ -132,10 +133,11 @@ autoUpdater.on("update-available", (info) => {
 
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
+      log.info("Utente ha scelto di scaricare l'aggiornamento");
       autoUpdater.downloadUpdate();
 
       autoUpdater.on("download-progress", (progressObj) => {
-        log.info("Progresso del download:", progressObj);
+        log.info("Progresso del download:", JSON.stringify(progressObj));
         if (dialogWindow && !dialogWindow.isDestroyed()) {
           dialogWindow.webContents.send("download-progress", progressObj);
         }
@@ -150,9 +152,8 @@ autoUpdater.on("update-available", (info) => {
 });
 
 autoUpdater.on("update-downloaded", (info) => {
-  log.info("Aggiornamento scaricato:", info);
+  log.info("Aggiornamento scaricato con successo:", JSON.stringify(info));
 
-  // Chiudi la finestra di download
   if (dialogWindow && !dialogWindow.isDestroyed()) {
     dialogWindow.close();
     dialogWindow = null;
@@ -169,7 +170,7 @@ autoUpdater.on("update-downloaded", (info) => {
 
   ipcMain.once("dialog-response", (event, response) => {
     if (response === 0) {
-      log.info("Richiesto riavvio per installare l'aggiornamento");
+      log.info("Utente ha scelto di riavviare per installare l'aggiornamento");
 
       // Chiudi tutte le finestre
       if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
@@ -181,15 +182,15 @@ autoUpdater.on("update-downloaded", (info) => {
         mainWindow = null;
       }
 
-      // Ritarda il quitAndInstall per garantire la chiusura delle finestre
-      setTimeout(() => {
-        try {
-          log.info("Avvio di quitAndInstall...");
-          autoUpdater.quitAndInstall(true, true); // Forza l'installazione e il riavvio
-        } catch (error) {
-          log.error("Errore durante quitAndInstall:", error);
-        }
-      }, 500); // Aumentato a 500ms per sicurezza
+      // Esegui quitAndInstall immediatamente
+      log.info("Chiusura finestre completata, avvio quitAndInstall...");
+      try {
+        autoUpdater.quitAndInstall(true, true); // Forza l'installazione e il riavvio
+        log.info("quitAndInstall eseguito con successo"); // Questo potrebbe non essere scritto se l'app si chiude subito
+      } catch (error) {
+        log.error("Errore durante quitAndInstall:", error.message);
+        app.quit(); // Forza la chiusura se fallisce
+      }
     } else {
       log.info("Riavvio posticipato dall'utente");
       if (restartDialogWindow && !restartDialogWindow.isDestroyed()) {
@@ -200,11 +201,11 @@ autoUpdater.on("update-downloaded", (info) => {
 });
 
 autoUpdater.on("update-not-available", (info) => {
-  log.info("Nessun aggiornamento disponibile:", info);
+  log.info("Nessun aggiornamento disponibile:", JSON.stringify(info));
 });
 
 autoUpdater.on("error", (error) => {
-  log.error("Errore durante il controllo degli aggiornamenti:", error);
+  log.error("Errore durante il processo di aggiornamento:", error.message);
 });
 
 app.on("window-all-closed", () => {
