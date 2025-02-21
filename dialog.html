@@ -68,6 +68,7 @@
       font-size: 12px;
       color: #666;
       margin-top: 5px;
+      display: none; /* Nascondi inizialmente le informazioni di progresso */
     }
   </style>
 </head>
@@ -78,7 +79,7 @@
     <div class="progress-bar" id="progress-bar">
       <div id="progress-bar-inner" class="progress-bar-inner"></div>
     </div>
-    <div class="progress-info">
+    <div class="progress-info" id="progress-info">
       <span id="progress-percent">0%</span> |
       <span id="progress-transferred">0 MB</span> |
       <span id="progress-speed">0 KB/s</span>
@@ -96,17 +97,17 @@
       // Gestisci il clic sui pulsanti
       document.getElementById('btn-yes').addEventListener('click', () => {
         window.electronAPI.sendDialogResponse(0); // Risposta "Sì"
+
+        // Mostra la progress bar e le informazioni di progresso
+        const progressBar = document.getElementById('progress-bar');
+        const progressInfo = document.getElementById('progress-info');
+        progressBar.style.display = 'block';
+        progressInfo.style.display = 'block';
       });
 
       document.getElementById('btn-no').addEventListener('click', () => {
         window.electronAPI.sendDialogResponse(1); // Risposta "No"
       });
-    });
-
-    // Mostra la progress bar quando richiesto
-    window.electronAPI.onShowProgressBar(() => {
-      const progressBar = document.getElementById('progress-bar');
-      progressBar.style.display = 'block'; // Mostra la progress bar
     });
 
     // Aggiorna la progress bar e le informazioni di progresso
@@ -131,6 +132,14 @@
       const progressSpeed = document.getElementById('progress-speed');
       const speedKBps = (progress.bytesPerSecond / 1024).toFixed(2);
       progressSpeed.textContent = `${speedKBps} KB/s`;
+    });
+
+    // Nascondi la progress bar e le informazioni di progresso quando il download è completato
+    window.electronAPI.onDownloadComplete(() => {
+      const progressBar = document.getElementById('progress-bar');
+      const progressInfo = document.getElementById('progress-info');
+      progressBar.style.display = 'none';
+      progressInfo.style.display = 'none';
     });
   </script>
 </body>

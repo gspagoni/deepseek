@@ -144,11 +144,6 @@ autoUpdater.on("update-available", (info) => {
           dialogWindow.webContents.send("download-progress", progressObj);
         }
       });
-
-      // Mostra la progress bar nella finestra di dialogo
-      if (dialogWindow && !dialogWindow.isDestroyed()) {
-        dialogWindow.webContents.send("show-progress-bar");
-      }
     } else {
       log.info("Download annullato dall'utente");
       if (dialogWindow && !dialogWindow.isDestroyed()) {
@@ -162,6 +157,8 @@ autoUpdater.on("update-downloaded", (info) => {
   log.info("Aggiornamento scaricato:", info);
 
   if (dialogWindow && !dialogWindow.isDestroyed()) {
+    // Notifica il renderer process che il download è completato
+    dialogWindow.webContents.send("download-complete");
     dialogWindow.close();
   }
 

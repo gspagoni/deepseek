@@ -16,7 +16,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
       callback(progress)
     ),
 
-  // Metodo per mostrare la progress bar
-  onShowProgressBar: (callback) =>
-    ipcRenderer.on("show-progress-bar", () => callback()),
+  // Metodo per notificare il completamento del download
+  onDownloadComplete: (callback) =>
+    ipcRenderer.on("download-complete", () => callback()),
 });
