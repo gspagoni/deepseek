@@ -17,6 +17,17 @@
 ; Definisci le lingue supportate
 !insertmacro MUI_LANGUAGE "English"
 
+; Dichiarazione delle variabili
+Var year
+Var month
+Var day
+Var hour
+Var minute
+Var second
+Var timestamp
+Var config
+Var configFile
+
 Section "Install" Sec01
   SetOutPath $INSTDIR
 
