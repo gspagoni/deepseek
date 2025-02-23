@@ -32,6 +32,9 @@
     MessageBox MB_OK "Errore durante la creazione del file config.json!"
   ${EndIf}
 
+  ; Imposta l'immagine header
+  SetBrandingImage "headerImage.bmp"
+
 !macroend
 
 !insertmacro customInstall
@@ -42,3 +45,15 @@
 !macroend
 
 !insertmacro customHeader
+
+LoadLanguageFile ${NSISDIR}\Contrib\Language files\English.nsh
+!insertmacro MUI_LANGUAGE "ENGLISH"
+!define MUI_WELCOMEPAGE_TITLE "Deepseek Installer"
+!define MUI_WELCOMEPAGE_TEXT "Welcome to the Deepseek installer."
+!define MUI_FINISHPAGE_RUN "$INSTDIR\your_executable.exe"  ; Modifica con il nome del tuo eseguibile
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES

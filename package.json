@@ -42,12 +42,20 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerSidebarFile": "installerSidebar.html",
       "uninstallDisplayName": "${productName} ${version}",
       "include": "installer.nsh",
-      "headerImage": "assets/headerImage.bmp",
       "installerIcon": "assets/installerIcon.ico",
       "uninstallerIcon": "assets/uninstallerIcon.ico"
-    }
+    },
+    "extraResources": [
+      {
+        "from": "assets/headerImage.bmp",
+        "to": "headerImage.bmp"
+      },
+      {
+        "from": "installerSidebar.html",
+        "to": "installerSidebar.html"
+      }
+    ]
   }
 }
