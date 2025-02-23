@@ -27,9 +27,13 @@ Var second
 Var timestamp
 Var config
 Var configFile
+Var appVersion  ; Variabile per memorizzare la versione dell'app
 
 Section "Install" Sec01
   SetOutPath $INSTDIR
+
+  ; Leggi la variabile d'ambiente APP_VERSION
+  ReadEnvStr $appVersion "APP_VERSION"
 
   ; Ottieni la data e l'ora correnti usando System.dll
   System::Call "kernel32::GetLocalTime(w .r0)"
@@ -46,7 +50,7 @@ Section "Install" Sec01
   ; Crea il contenuto del file config.json
   StrCpy $config '{\r\n'
   StrCpy $config "$config  \"installationPath\": \"$INSTDIR\",\r\n"
-  StrCpy $config "$config  \"version\": \"$APP_VERSION\",\r\n"    ; Versione dell'app
+  StrCpy $config "$config  \"version\": \"$appVersion\",\r\n"    ; Versione dell'app
   StrCpy $config "$config  \"installationTimestamp\": \"$timestamp\"\r\n"
   StrCpy $config "$config }"
 

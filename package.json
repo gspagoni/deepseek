@@ -4,7 +4,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder -p always"
+    "build": "set APP_VERSION=%npm_package_version% && electron-builder -p always"
   },
   "dependencies": {
     "deepseek": "file:",
