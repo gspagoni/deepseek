@@ -1,6 +1,6 @@
 {
   "name": "deepseek",
-  "version": "9.10.2",
+  "version": "9.10.3",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
