@@ -20,14 +20,14 @@
 Section "Install" Sec01
   SetOutPath $INSTDIR
 
-  ; Ottieni la data e l'ora correnti
+  ; Ottieni la data e l'ora correnti usando System.dll
   System::Call "kernel32::GetLocalTime(w .r0)"
-  StrCpy $year $r0 0 4
-  StrCpy $month $r0 4 2
-  StrCpy $day $r0 6 2
-  StrCpy $hour $r0 8 2
-  StrCpy $minute $r0 10 2
-  StrCpy $second $r0 12 2
+  System::Get $year $r0 0  ; year
+  System::Get $month $r0 2 ; month
+  System::Get $day $r0 4   ; day
+  System::Get $hour $r0 6  ; hour
+  System::Get $minute $r0 8 ; minute
+  System::Get $second $r0 10 ; second
 
   ; Formatta la data e l'ora in formato ISO 8601 (YYYY-MM-DDTHH:mm:ss)
   StrCpy $timestamp "$year-$month-$day`T$hour:$minute:$second"
