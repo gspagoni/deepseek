@@ -52,7 +52,7 @@ Section "Install" Sec01
   StrCpy $config "$config  \"installationPath\": \"$INSTDIR\",\r\n"
   StrCpy $config "$config  \"version\": \"$appVersion\",\r\n"    ; Versione dell'app
   StrCpy $config "$config  \"installationTimestamp\": \"$timestamp\"\r\n"
-  StrCpy $config "$config }"
+  StrCpy $config }"
 
   ; Scrivi il file config.json
   FileOpen $configFile $INSTDIR\config.json w
@@ -64,7 +64,7 @@ Section "Install" Sec01
   ${EndIf}
 
   ; Imposta l'immagine header
-  SetBrandingImage "$INSTDIR\resources\headerImage.bmp"
+  SetBrandingImage "$PLUGINSDIR\headerImage.bmp"
 
   ; Scrivi i file dell'applicazione (esempio)
   File /r *.*
