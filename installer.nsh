@@ -1,21 +1,5 @@
 !include LogicLib.nsh
 !include FileFunc.nsh
-!include MUI2.nsh  ; Include la Modern UI
-
-!define MUI_WELCOMEPAGE_TITLE "Deepseek Installer"
-!define MUI_WELCOMEPAGE_TEXT "Benvenuto nell'installer di Deepseek."
-!define MUI_FINISHPAGE_RUN "$INSTDIR\your_executable.exe"  ; Modifica con il nome del tuo eseguibile
-
-!insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_DIRECTORY
-!insertmacro MUI_PAGE_INSTFILES
-!insertmacro MUI_PAGE_FINISH
-
-!insertmacro MUI_UNPAGE_CONFIRM
-!insertmacro MUI_UNPAGE_INSTFILES
-
-; Definisci le lingue supportate
-!insertmacro MUI_LANGUAGE "English"
 
 ; Dichiarazione delle variabili
 Var year
@@ -52,7 +36,7 @@ Section "Install" Sec01
   StrCpy $config "$config  \"installationPath\": \"$INSTDIR\",\r\n"
   StrCpy $config "$config  \"version\": \"$appVersion\",\r\n"    ; Versione dell'app
   StrCpy $config "$config  \"installationTimestamp\": \"$timestamp\"\r\n"
-  StrCpy $config }"
+  StrCpy $config "$config }"
 
   ; Scrivi il file config.json
   FileOpen $configFile $INSTDIR\config.json w
@@ -62,9 +46,6 @@ Section "Install" Sec01
   ${Else}
     MessageBox MB_OK "Errore durante la creazione del file config.json!"
   ${EndIf}
-
-  ; Imposta l'immagine header
-  SetBrandingImage "$PLUGINSDIR\headerImage.bmp"
 
   ; Scrivi i file dell'applicazione (esempio)
   File /r *.*
@@ -76,8 +57,3 @@ Section "Uninstall"
   Delete "$INSTDIR\config.json"
   RMDir /r "$INSTDIR"
 SectionEnd
-
-Function .onInit
-  ; Imposta la directory di installazione predefinita
-  StrCpy $INSTDIR "$PROGRAMFILES\${APP_PRODUCT_NAME}"
-FunctionEnd

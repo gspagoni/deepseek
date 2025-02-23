@@ -4,7 +4,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "set APP_VERSION=%npm_package_version% && electron-builder -p always"
+    "build": "set APP_VERSION=%npm_package_version% && set APP_PRODUCT_NAME=%npm_package_name% && electron-builder -p always"
   },
   "dependencies": {
     "deepseek": "file:",
@@ -40,6 +40,7 @@
       ]
     },
     "nsis": {
+      "warningsAsErrors": false,
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "uninstallDisplayName": "${productName} ${version}",
@@ -51,10 +52,6 @@
       {
         "from": "assets/headerImage.bmp",
         "to": "headerImage.bmp"
-      },
-      {
-        "from": "installerSidebar.html",
-        "to": "installerSidebar.html"
       }
     ]
   }
