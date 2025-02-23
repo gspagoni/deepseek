@@ -1,11 +1,27 @@
 !include LogicLib.nsh
 !include FileFunc.nsh
+!include MUI2.nsh  ; Include la Modern UI
 
-!macro customInstall
+!define MUI_WELCOMEPAGE_TITLE "Deepseek Installer"
+!define MUI_WELCOMEPAGE_TEXT "Benvenuto nell'installer di Deepseek."
+!define MUI_FINISHPAGE_RUN "$INSTDIR\your_executable.exe"  ; Modifica con il nome del tuo eseguibile
+
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
+
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+
+; Definisci le lingue supportate
+!insertmacro MUI_LANGUAGE "English"
+
+Section "Install" Sec01
+  SetOutPath $INSTDIR
 
   ; Ottieni la data e l'ora correnti
-  System::Call "kernel32::GetLocalTime(w .r0)" #r0 will now contain the SYSTEMTIME structure
-  ; Extract the values to use
+  System::Call "kernel32::GetLocalTime(w .r0)"
   StrCpy $year $r0 0 4
   StrCpy $month $r0 4 2
   StrCpy $day $r0 6 2
@@ -35,25 +51,18 @@
   ; Imposta l'immagine header
   SetBrandingImage "headerImage.bmp"
 
-!macroend
+  ; Scrivi i file dell'applicazione (esempio)
+  File /r *.*
 
-!insertmacro customInstall
+SectionEnd
 
-!macro customHeader
-  ; Set the default install directory
+Section "Uninstall"
+  ; Codice per disinstallare l'applicazione (rimuovere file, chiavi di registro, ecc.)
+  Delete "$INSTDIR\config.json"
+  RMDir /r "$INSTDIR"
+SectionEnd
+
+Function .onInit
+  ; Imposta la directory di installazione predefinita
   StrCpy $INSTDIR "$PROGRAMFILES\${APP_PRODUCT_NAME}"
-!macroend
-
-!insertmacro customHeader
-
-LoadLanguageFile ${NSISDIR}\Contrib\Language files\English.nsh
-!insertmacro MUI_LANGUAGE "ENGLISH"
-!define MUI_WELCOMEPAGE_TITLE "Deepseek Installer"
-!define MUI_WELCOMEPAGE_TEXT "Welcome to the Deepseek installer."
-!define MUI_FINISHPAGE_RUN "$INSTDIR\your_executable.exe"  ; Modifica con il nome del tuo eseguibile
-!insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_DIRECTORY
-!insertmacro MUI_PAGE_INSTFILES
-!insertmacro MUI_PAGE_FINISH
-!insertmacro MUI_UNPAGE_CONFIRM
-!insertmacro MUI_UNPAGE_INSTFILES
+FunctionEnd
