@@ -46,7 +46,8 @@
       "uninstallDisplayName": "${productName} ${version}",
       "include": "cinstaller.nsh",
       "installerIcon": "assets/installerIcon.ico",
-      "uninstallerIcon": "assets/uninstallerIcon.ico"
+      "uninstallerIcon": "assets/uninstallerIcon.ico",
+      "perMachine": true
     },
     "extraResources": [
       {
