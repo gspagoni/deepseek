@@ -3,42 +3,36 @@
 
 RequestExecutionLevel admin
 
-Function .onInstSuccess
+Section "CreateConfig" SEC01
   CreateDirectory "$INSTDIR"
   ClearErrors
 
-  ; Crea un file batch temporaneo per ottenere il timestamp
-  FileOpen $1 "$TEMP\gettime.bat" w
-  IfErrors error
-  FileWrite $1 "@echo off$\r$\n"
-  FileWrite $1 "echo %DATE% %TIME% > $\"$INSTDIR\\timestamp.txt$\"\r\n"
-  FileClose $1
+  ; Usa cmd per ottenere il timestamp direttamente
+  nsExec::ExecToStack 'cmd /c echo %DATE% %TIME%'
+  Pop $0 ; Codice di uscita
+  Pop $3 ; Output del comando (timestamp)
+  StrCmp $0 0 0 error_timestamp_exec
 
-  ; Esegue il batch e aspetta
-  ExecWait '"$TEMP\gettime.bat"'
-
-  ; Legge il timestamp dal file temporaneo
-  ClearErrors
-  FileOpen $2 "$INSTDIR\timestamp.txt" r
-  IfErrors error
-  FileRead $2 $3
-  FileClose $2
-  Delete "$INSTDIR\timestamp.txt"
-  Delete "$TEMP\gettime.bat"
+  ; Rimuove eventuali newline o spazi finali dal timestamp
+  StrCpy $4 $3 -2 ; Taglia gli ultimi 2 caratteri (di solito "\r\n")
 
   ; Scrive il config.json
   FileOpen $0 "$INSTDIR\config.json" w
-  IfErrors error
-  FileWrite $0 "{\r\n"
-  FileWrite $0 "  \"installPath\": \"$INSTDIR\",\r\n"
-  FileWrite $0 "  \"version\": \"9.10.15\",\r\n"
-  FileWrite $0 "  \"timestamp\": \"$3\"\r\n"
-  FileWrite $0 "}\r\n"
+  IfErrors error_config_open
+  FileWrite $0 "{$\r$\n"
+  FileWrite $0 "  $\"installPath$\": $\"$INSTDIR$\",$\r$\n"
+  FileWrite $0 "  $\"version$\": $\"${VERSION}$\",$\r$\n"
+  FileWrite $0 "  $\"timestamp$\": $\"$4$\"$\r$\n"
+  FileWrite $0 "}$\r$\n"
   FileClose $0
-  MessageBox MB_OK "config.json creato con successo in $INSTDIR"
+  Goto done ; Nessun messaggio in caso di successo
+
+error_timestamp_exec:
+  MessageBox MB_OK "Errore: Impossibile ottenere il timestamp, codice: $0"
+  Goto done
+error_config_open:
+  MessageBox MB_OK "Errore: Impossibile creare config.json in $INSTDIR"
   Goto done
 
-error:
-  MessageBox MB_OK "Errore nella creazione dei file"
 done:
-FunctionEnd
+SectionEnd
