@@ -27,6 +27,27 @@
     "productName": "Deepseek",
     "directories": {
       "output": "dist"
+    },
+    "win": {
+      "artifactName": "${productName} Setup.${ext}",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerSidebarFile": "installerSidebar.html",
+      "uninstallDisplayName": "${productName} ${version}",
+      "include": "installer.nsh",
+      "headerImage": "assets/headerImage.bmp",
+      "installerIcon": "assets/installerIcon.ico",
+      "uninstallerIcon": "assets/uninstallerIcon.ico"
     }
   }
 }
