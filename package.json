@@ -4,7 +4,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "set APP_VERSION=%npm_package_version% && set APP_PRODUCT_NAME=%npm_package_name% && electron-builder -p always"
+    "build": "electron-builder -p always"
   },
   "dependencies": {
     "deepseek": "file:",
@@ -44,7 +44,7 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "uninstallDisplayName": "${productName} ${version}",
-      "include": "installer.nsh",
+      "include": "cinstaller.nsh",
       "installerIcon": "assets/installerIcon.ico",
       "uninstallerIcon": "assets/uninstallerIcon.ico"
     },
