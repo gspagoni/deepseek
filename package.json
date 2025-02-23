@@ -45,7 +45,10 @@
       "uninstallDisplayName": "${productName} ${version}",
       "include": "installer.nsh",
       "installerIcon": "assets/installerIcon.ico",
-      "uninstallerIcon": "assets/uninstallerIcon.ico"
+      "uninstallerIcon": "assets/uninstallerIcon.ico",
+      "defines": {
+        "APP_VERSION": "${version}"
+      }
     },
     "extraResources": [
       {

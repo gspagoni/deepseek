@@ -46,7 +46,7 @@ Section "Install" Sec01
   ; Crea il contenuto del file config.json
   StrCpy $config '{\r\n'
   StrCpy $config "$config  \"installationPath\": \"$INSTDIR\",\r\n"
-  StrCpy $config "$config  \"version\": \"${APP_VERSION}\",\r\n"  ; APP_VERSION è fornita da electron-builder
+  StrCpy $config "$config  \"version\": \"$APP_VERSION\",\r\n"    ; Versione dell'app
   StrCpy $config "$config  \"installationTimestamp\": \"$timestamp\"\r\n"
   StrCpy $config "$config }"
 
