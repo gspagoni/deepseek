@@ -64,7 +64,7 @@ Section "Install" Sec01
   ${EndIf}
 
   ; Imposta l'immagine header
-  SetBrandingImage "headerImage.bmp"
+  SetBrandingImage "$INSTDIR\resources\headerImage.bmp"
 
   ; Scrivi i file dell'applicazione (esempio)
   File /r *.*
